@@ -1,0 +1,22 @@
+[
+    {
+        "name": "qwen3-8b",
+        "provider": "local-qwen3-8b",
+        "hf": "Qwen3-8B",
+        "quant": "Q4_K_M",
+        "url": "Qwen/Qwen3-8B-GGUF/Qwen3-8B-Q4_K_M.gguf",
+        "port": 8089,
+        "context": 32768,
+        "parallel": 3
+    },
+    {
+        "name": "qwen2.5-coder-7b",
+        "provider": "local-qwen2.5-coder-7b",
+        "hf": "qwen2.5-coder-7b-instruct",
+        "quant": "Q4_K_M",
+        "url": "Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/qwen2.5-coder-7b-instruct-q4_k_m.gguf",
+        "port": 8090,
+        "context": 32768,
+        "parallel": 2
+    }
+]

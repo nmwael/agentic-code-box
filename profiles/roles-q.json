@@ -1,0 +1,10 @@
+{
+    "architect": { "model": "qwen3-8b", "slot": 0 },
+    "researcher": { "model": "qwen3-8b", "slot": 1 },
+    "reviewer": { "model": "qwen3-8b", "slot": 2 },
+    "build": { "model": "qwen3-8b", "slot": 2 },
+    "ui": { "model": "qwen3-8b", "slot": 2 },
+    "artist": { "model": "qwen3-8b", "slot": 2 },
+    "ai-researcher": { "model": "qwen3-8b", "slot": 2 },
+    "coder": { "model": "qwen2.5-coder-7b", "slot": 0 }
+}

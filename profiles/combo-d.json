@@ -1,0 +1,22 @@
+[
+    {
+        "name": "gemma4-12b",
+        "provider": "local-gemma4-12b",
+        "hf": "gemma-4-12b-it-UD-IQ2_M",
+        "quant": "IQ2_M",
+        "url": "unsloth/gemma-4-12b-it-GGUF/gemma-4-12b-it-UD-IQ2_M.gguf",
+        "port": 8089,
+        "context": 32768,
+        "parallel": 3
+    },
+    {
+        "name": "phi-4",
+        "provider": "local-phi-4",
+        "hf": "phi-4",
+        "quant": "IQ3_M",
+        "url": "bartowski/phi-4-GGUF/phi-4-IQ3_M.gguf",
+        "port": 8090,
+        "context": 32768,
+        "parallel": 2
+    }
+]

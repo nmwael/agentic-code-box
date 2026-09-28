@@ -1,0 +1,22 @@
+[
+    {
+        "name": "gemma4-12b",
+        "provider": "local-gemma4-12b",
+        "hf": "gemma-4-12b-it-UD-IQ3_XXS",
+        "quant": "IQ3_XXS",
+        "url": "unsloth/gemma-4-12b-it-GGUF/gemma-4-12b-it-UD-IQ3_XXS.gguf",
+        "port": 8089,
+        "context": 32768,
+        "parallel": 3
+    },
+    {
+        "name": "deepseek-coder-6.7b",
+        "provider": "local-deepseek-coder-6.7b",
+        "hf": "deepseek-coder-6.7b-instruct",
+        "quant": "IQ4_XS",
+        "url": "RichardErkhov/deepseek-ai_-_deepseek-coder-6.7b-instruct-gguf/deepseek-coder-6.7b-instruct.IQ4_XS.gguf",
+        "port": 8090,
+        "context": 32768,
+        "parallel": 2
+    }
+]
