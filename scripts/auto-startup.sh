@@ -9,6 +9,12 @@ set -euo pipefail
 
 ROOT="${STACK_ROOT:-$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)}"
 STACK_JSON="${STACK_JSON:-/usr/local/share/llm-lab/stack.json}"
+# Mirror the feature's precedence: explicit env > stack.json models_dir > $ROOT/models,
+# so a custom STACK_JSON does not silently point at the wrong models directory.
+if [ -z "${MODELS_DIR:-}" ] && [ -f "$STACK_JSON" ]; then
+    _md="$(jq -r '.models_dir // empty' "$STACK_JSON" 2>/dev/null || true)"
+    [ -n "$_md" ] && MODELS_DIR="$_md"
+fi
 MODELS_DIR="${MODELS_DIR:-$ROOT/models}"
 BIFROST_PORT="${BIFROST_PORT:-8082}"
 OPENCODE_PORT="${OPENCODE_PORT:-4096}"
@@ -32,6 +38,14 @@ else
         port="$(jq -r ".models[$i].port" "$STACK_JSON")"
         ctx="$(jq -r ".models[$i].context" "$STACK_JSON")"
         par="$(jq -r ".models[$i].parallel // 3" "$STACK_JSON")"
+        kv_k="$(jq -r ".models[$i].kv_cache_type_k // empty" "$STACK_JSON")"
+        kv_v="$(jq -r ".models[$i].kv_cache_type_v // empty" "$STACK_JSON")"
+
+        # KV cache dominates VRAM at long context (measured ~0.5 MiB/token at f16),
+        # so it is opt-in per model rather than hardcoded.
+        kv_args=()
+        [ -n "$kv_k" ] && kv_args+=(--cache-type-k "$kv_k")
+        [ -n "$kv_v" ] && kv_args+=(--cache-type-v "$kv_v")
 
         # Same glob the feature's fetcher names files for: *<hf / -> _>*<quant>*.gguf
         slug="$(printf '%s' "$hf" | tr '/' '_')"
@@ -52,14 +66,16 @@ else
         else
             # --alias must equal models[].name: it is the model id opencode pins
             # and the prefix bifrost routes on ("{name}*"). A mismatch 404s.
-            echo "[auto-startup] starting $name on :$port (ctx=$ctx slots=$par)"
+            echo "[auto-startup] starting $name on :$port (ctx=$ctx slots=$par kv=${kv_k:-f16}/${kv_v:-f16})"
             nohup llama-server -m "$model_file" --host 0.0.0.0 --port "$port" \
                 --ctx-size "$ctx" --alias "$name" --parallel "$par" \
+                ${kv_args[@]+"${kv_args[@]}"} \
                 >"/tmp/llama-server-$name.log" 2>&1 &
 
             ready=false
             n=0
-            while [ "$n" -lt 15 ]; do
+            # Cold loads of multi-GB weights from disk routinely take 30-60s.
+            while [ "$n" -lt 45 ]; do
                 if curl -sf -o /dev/null --max-time 2 "http://127.0.0.1:$port/health"; then
                     ready=true
                     break
@@ -70,7 +86,7 @@ else
             if [ "$ready" = true ]; then
                 echo "[auto-startup] $name ready on :$port"
             else
-                echo "[auto-startup] WARNING: $name not ready after 30s — see /tmp/llama-server-$name.log"
+                echo "[auto-startup] WARNING: $name not ready after 90s — see /tmp/llama-server-$name.log"
             fi
         fi
         i=$((i + 1))

@@ -1,10 +1,34 @@
 {
-    "architect": { "model": "gemma4-12b", "slot": 0 },
-    "researcher": { "model": "gemma4-12b", "slot": 1 },
-    "reviewer": { "model": "gemma4-12b", "slot": 2 },
-    "build": { "model": "gemma4-12b", "slot": 2 },
-    "ui": { "model": "gemma4-12b", "slot": 2 },
-    "artist": { "model": "gemma4-12b", "slot": 2 },
-    "ai-researcher": { "model": "gemma4-12b", "slot": 2 },
-    "coder": { "model": "deepseek-coder-6.7b", "slot": 0 }
+  "architect": {
+    "model": "gemma4-12b",
+    "slot": 0
+  },
+  "researcher": {
+    "model": "gemma4-12b",
+    "slot": 1
+  },
+  "reviewer": {
+    "model": "gemma4-12b",
+    "slot": 2
+  },
+  "build": {
+    "model": "gemma4-12b",
+    "slot": 2
+  },
+  "ui": {
+    "model": "gemma4-12b",
+    "slot": 2
+  },
+  "artist": {
+    "model": "gemma4-12b",
+    "slot": 2
+  },
+  "ai-researcher": {
+    "model": "gemma4-12b",
+    "slot": 2
+  },
+  "coder": {
+    "model": "qwen2.5-coder-3b",
+    "slot": 0
+  }
 }

@@ -17,18 +17,76 @@ The original B/D suggestions were built for a 24 GB card. On the target box
 | D | Gemma 4 12B `UD-IQ3_M` + Phi-4 `IQ4_NL` = **12.13 GiB** | No |
 
 Both exceed available VRAM, and neither leaves room for KV cache or two CUDA
-contexts. Every profile below is re-quantized to fit, with a small headroom
-margin kept free. Every model URL was verified to return HTTP 200.
+contexts. Every profile below is re-quantized to fit. All six model URLs
+return HTTP 200, and every model was loaded and sanity-checked on the target GPU.
 
-| Profile | Orchestrator (:8089) | Coder (:8090) | Weights |
-| --- | --- | --- | --- |
-| `b` | Gemma 4 12B `UD-IQ3_XXS` | DeepSeek-Coder 6.7B `IQ4_XS` | **7.72 GiB** |
-| `d` | Gemma 4 12B `UD-IQ2_M` | Phi-4 `IQ3_M` | **10.35 GiB** |
-| `q` | Qwen3-8B `Q4_K_M` | Qwen2.5-Coder-7B `Q4_K_M` | **9.05 GiB** |
+| Profile | Orchestrator (:8089) | Coder (:8090) | Weights (measured) | VRAM used | Free after |
+| --- | --- | --- | --- | --- | --- |
+| `b` | Gemma 4 12B `UD-IQ3_XXS` | Qwen2.5-Coder-3B `Q4_K_M` | **6.28 GiB** | 8140 MiB | ~2780 MiB |
+| `d` | Gemma 4 12B `UD-IQ2_M` | Phi-4 `IQ3_M` | **9.94 GiB** | 10784 MiB | ~320 MiB |
+| `q` | Qwen3-8B `Q4_K_M` | Qwen2.5-Coder-7B `Q4_K_M` | **9.04 GiB** | 10936 MiB | ~400 MiB |
 
-`b` is the default (best quality-to-VRAM ratio). `d` is the closest thing to a
-"Phi-4 coder" setup and runs the largest models, so it is the tightest on VRAM.
-`q` is the safest if you also want headroom for other GPU work.
+`b` is the default and by far the most comfortable. `q` is the strongest
+coder. `d` is the closest thing to a "Phi-4 coder" setup and is the tightest —
+close other GPU workloads before booting it.
+
+### KV cache is the real constraint, not weights
+
+Weight sizes alone are misleading. A single 12B model at the naive
+`ctx=32768, parallel=3, f16 KV` setting needs **8148 MiB** — nearly twice its
+own weights — because KV cache scales with context x slots. All three profiles
+as first written (f16 KV, 3/2 slots) needed **~17.8 GiB** and could not run at
+all. Every profile therefore ships quantized KV:
+
+- Orchestrator: `ctx=16384`, `--cache-type-k q8_0 --cache-type-v q8_0`
+- Coder: `ctx=8192`, `--cache-type-k q4_0 --cache-type-v q8_0`
+
+Measured effect on the coder: KV 16384 MiB -> 1664 MiB, compute buffer
+808 MiB -> 168 MiB, total 9699 MiB -> 5397 MiB. `auto-startup.sh` passes
+`kv_cache_type_k` / `kv_cache_type_v` through from the profile when present.
+
+The orchestrator keeps `parallel: 3` in profile `b` because `roles-b.json` maps
+roles onto slots 0/1/2; each extra slot costs only ~250 MiB since Gemma 4's KV
+is small (255 MiB at 1 slot, 765 MiB at 3). The coder runs `parallel: 1`.
+
+Profiles `d` and `q` are too tight for that and run `parallel: 1`, so every role
+there shares slot 0 — three slots would need ~510 MiB more in `d` and ~2450 MiB
+more in `q`, and both already have under 500 MiB free. If you want per-role
+slots in `d`/`q`, drop their orchestrator context to 8192 first and re-measure.
+
+### Model choices verified on hardware
+
+Each model was loaded on the RTX 5070 and asked "What is the capital of
+France?" over `/v1/chat/completions`. Five of six are coherent — including
+`IQ2_M`, which is far more aggressive than its name suggests.
+
+Slot routing uses the `slot_id` request field; there is no `/slot/N` URL path
+in llama.cpp b11223. `gemma-4-12b` is a reasoning model, so it fills
+`reasoning_content` first and only then `content` — raise `max_tokens` or
+clients will see an empty reply.
+
+#### DeepSeek-Coder 6.7B: usable, but not without a stop-string change
+
+`IQ4_XS` and `Q4_K_M` from `RichardErkhov/deepseek-ai_-_deepseek-coder-6.7b-instruct-gguf`
+both return empty or degenerate output (`defdefdef...`). That is **not** a
+quantization failure — the identical `Q4_K_M` from `TheBloke/deepseek-coder-6.7B-instruct-GGUF`
+answers correctly. The RichardErkhov GGUFs carry broken chat-template metadata.
+
+TheBloke's version still never stops: it emits `<|im_end|>` and `<|im_start|>`
+as literal text and keeps generating, because the tokenizer does not mark them
+as stop tokens. Findings:
+
+- An explicit ChatML `--chat-template-file` does **not** fix it.
+- Request-level `"stop": ["<|im_end|>", "<|im_start|>"]` does fix it — clean
+  `finish: stop` for both prose and code.
+- `llama-server` has no server-side `--stop` flag, and neither the opencode
+  provider generator nor the bifrost template has a stop passthrough, so every
+  client would have to send those strings. That is a feature-side change, and
+  at 3.80 GiB it would also cut profile `b` to ~294 MiB of free VRAM.
+
+Profile `b` therefore uses Qwen2.5-Coder-3B `Q4_K_M`, which works out of the
+box and leaves ~2780 MiB free. Revisit this if a stop-passthrough is ever added
+to the stack.
 
 ## Boot
 
