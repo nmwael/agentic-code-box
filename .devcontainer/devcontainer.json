@@ -46,7 +46,7 @@
         "seccomp:unconfined"
     ],
     "hostRequirements": {
-        "gpu": "all"
+        "gpu": true
     },
     "remoteUser": "root",
     "runArgs": [
