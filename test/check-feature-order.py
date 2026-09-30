@@ -20,6 +20,11 @@ This repo previously shipped the shorthand and could not boot. Nothing here
 catches a regression except actually running `devcontainer up`, which is slow
 and needs a GPU, so this check is the cheap gate.
 
+Field types are not checked here. They used to be, hand-transcribed from the
+schema, but that is now redundant with test/validate-schema.py -- or rather
+with the `jsonschema validate` step in .github/workflows/static.yaml, which
+defers to the real schema instead of a local reading of it that can drift.
+
 Pure Python 3 stdlib: no network, no jq, no pip. Exit 0 when the config is
 sound, 1 otherwise.
 """
@@ -39,100 +44,6 @@ MUST_PRECEDE = [
      "ghcr.io/nmwael/agentic-devcontainer-feature/bifrost-gateway"),
 ]
 
-# Booleans, per the devcontainer schema. bool is a subclass of int in Python,
-# so these are checked ahead of any int test or 1 and 0 would pass.
-BOOL_FIELDS = ("privileged", "init", "updateRemoteUserUID")
-STR_FIELDS = ("remoteUser", "workspaceFolder")
-STR_ARRAYS = ("capAdd", "securityOpt", "runArgs")
-USER_ENV_PROBES = ("none", "loginShell", "loginInteractiveShell", "interactiveShell")
-
-
-def check_types(data):
-    """Type-check the devcontainer fields this config sets.
-
-    Transcribed from devContainer.base.schema.json by hand so this stays
-    runnable offline, like the rest of the check. Covers the fields present
-    here, not the whole spec.
-
-    Added because a wrong value in this file is invisible to every other
-    tool in the loop. The permissive CLI reads a bad hostRequirements.gpu,
-    decides it is a string, and returns it without complaint; the stricter
-    CLI bundled with VS Code rejects it outright. This repo is built through
-    VS Code, so the strict one is the one that matters and the permissive
-    one is the one that runs in CI.
-    """
-    out = []
-    for key in BOOL_FIELDS:
-        if key in data and not isinstance(data[key], bool):
-            out.append(
-                f"'{key}' must be a boolean, got {type(data[key]).__name__} "
-                f"({data[key]!r})"
-            )
-    for key in STR_FIELDS:
-        if key in data and not isinstance(data[key], str):
-            out.append(f"'{key}' must be a string, got {type(data[key]).__name__}")
-    for key in STR_ARRAYS:
-        val = data.get(key)
-        if val is None:
-            continue
-        if not isinstance(val, list) or not all(isinstance(v, str) for v in val):
-            out.append(f"'{key}' must be an array of strings")
-
-    ports = data.get("forwardPorts")
-    if ports is not None:
-        if not isinstance(ports, list):
-            out.append("'forwardPorts' must be an array")
-        else:
-            for p in ports:
-                if isinstance(p, bool) or not isinstance(p, (int, str)):
-                    out.append(
-                        f"'forwardPorts' entry {p!r} must be an integer or a "
-                        f"'host:port' string"
-                    )
-                elif isinstance(p, int) and not (0 <= p <= 65535):
-                    out.append(f"'forwardPorts' entry {p} is outside 0-65535")
-
-    env = data.get("containerEnv")
-    if env is not None:
-        if not isinstance(env, dict):
-            out.append("'containerEnv' must be an object")
-        else:
-            for k, v in env.items():
-                if not isinstance(v, str):
-                    out.append(
-                        f"'containerEnv' value for '{k}' must be a string, got "
-                        f"{type(v).__name__}"
-                    )
-
-    req = data.get("hostRequirements")
-    if req is not None:
-        if not isinstance(req, dict):
-            out.append("'hostRequirements' must be an object")
-        else:
-            if "gpu" in req:
-                gpu = req["gpu"]
-                # bool before int: True/False are ints in Python.
-                if not (isinstance(gpu, bool) or gpu == "optional"
-                        or isinstance(gpu, dict)):
-                    out.append(
-                        f'hostRequirements.gpu must be true, false, "optional", or '
-                        f'an object; got {gpu!r}. Note "all" is the Docker --gpus '
-                        f"spelling and is not valid for this field"
-                    )
-            if "cpus" in req and (isinstance(req["cpus"], bool)
-                                  or not isinstance(req["cpus"], int)):
-                out.append("'hostRequirements.cpus' must be an integer")
-            for key in ("memory", "storage"):
-                if key in req and not isinstance(req[key], str):
-                    out.append(f"'hostRequirements.{key}' must be a string")
-
-    probe = data.get("userEnvProbe")
-    if probe is not None and probe not in USER_ENV_PROBES:
-        out.append(f"'userEnvProbe' has invalid value {probe!r}")
-
-    return out
-
-
 def main():
     try:
         with open(CONFIG) as fh:
@@ -141,7 +52,7 @@ def main():
         print(f"check-feature-order FAILED: {CONFIG}: {exc}")
         return 1
 
-    errors = check_types(data)
+    errors = []
     features = data.get("features") or {}
     order = data.get("overrideFeatureInstallOrder")
 
@@ -176,7 +87,7 @@ def main():
             print(f"  - {err}")
         return 1
 
-    print(f"check-feature-order OK: config types valid, {len(order)} feature(s) ordered explicitly")
+    print(f"check-feature-order OK: {len(order)} feature(s) ordered explicitly")
     return 0
 
 
