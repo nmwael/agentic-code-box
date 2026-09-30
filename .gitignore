@@ -1,3 +1,7 @@
 models/
 wip/
 *.gguf
+
+# Python bytecode
+__pycache__/
+*.pyc
