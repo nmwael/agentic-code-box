@@ -23,7 +23,18 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends jq shellcheck
-          npm install -g "@sourcemeta/jsonschema@17.0.0"
+
+      - name: Install JSON Schema CLI
+        # The upstream Action, pinned. Same CLI version the devbox installs
+        # (see .devcontainer/Dockerfile), so a local run and a CI run cannot
+        # disagree on a gate.
+        #
+        # Note: unlike the Dockerfile, this path does not verify a checksum.
+        # The Action runs upstream's install script, which curls the release
+        # zip and unzips it with no digest check. Acceptable for an ephemeral
+        # runner, but it is the weaker of the two installs despite being the
+        # official one.
+        uses: sourcemeta/jsonschema@v17.0.0
 
       - name: Devcontainer config matches the official spec
         # 3e1dbe7 fixed hostRequirements.gpu = "all", which shipped in ad6da34

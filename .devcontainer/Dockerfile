@@ -27,7 +27,8 @@ FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu24.04
 # every binary dies with:
 #   error while loading shared libraries: libgomp.so.1
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libgomp1 ca-certificates \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates curl libgomp1 unzip \
     && rm -rf /var/lib/apt/lists/*
 
 # Flatten into /opt/llama-server. Two reasons this exact path matters:
@@ -58,7 +59,29 @@ RUN cd / && /opt/llama-server/llama-server --version
 ENV MODELS_DIR=/workspaces/agentic-code-box/models
 RUN mkdir -p "$MODELS_DIR"
 
-# JSON Schema CLI, for test/. Pinned to the version CI installs so a local run
-# and a CI run cannot disagree on a gate.
-RUN npm install -g @sourcemeta/jsonschema@17.0.0 \
-    && jsonschema version
+# JSON Schema CLI, for test/. The sha256 is checked against the published
+# CHECKSUMS.txt before the binary is installed, so this is a pinned artifact
+# rather than whatever npm serves at the time. CI installs the same version
+# via the upstream Action (see .github/workflows/static.yaml).
+# Assumes a glibc base (Ubuntu), so the -musl builds are not considered.
+ARG JSONSCHEMA_VERSION=17.0.0
+RUN set -eux; \
+    arch="$(dpkg --print-architecture)"; \
+    case "$arch" in \
+        amd64) target=x86_64 ;; \
+        arm64) target=arm64 ;; \
+        *) echo "unsupported architecture: $arch" >&2; exit 1 ;; \
+    esac; \
+    base="https://github.com/sourcemeta/jsonschema/releases/download/v${JSONSCHEMA_VERSION}"; \
+    zip="jsonschema-${JSONSCHEMA_VERSION}-linux-${target}.zip"; \
+    curl -fsSL "$base/CHECKSUMS.txt" -o /tmp/CHECKSUMS.txt; \
+    curl -fsSL "$base/$zip" -o "/tmp/$zip"; \
+    cd /tmp; \
+    sed -E "s/^SHA256 \\((.*)\\) = (.*)$/\\2  \\1/" CHECKSUMS.txt \
+        | grep " ${zip}\$" | sha256sum -c -; \
+    unzip -q "/tmp/$zip"; \
+    install -m0755 \
+        "jsonschema-${JSONSCHEMA_VERSION}-linux-${target}/bin/jsonschema" \
+        /usr/local/bin/jsonschema; \
+    rm -rf "/tmp/$zip" /tmp/CHECKSUMS.txt "/tmp/jsonschema-${JSONSCHEMA_VERSION}-linux-${target}"; \
+    jsonschema version
