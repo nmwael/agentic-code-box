@@ -1,0 +1,11 @@
+{
+  "source": "https://github.com/devcontainers/spec/tree/main/schemas",
+  "schemas": {
+    "devContainer.base.schema.json": {
+      "url": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.base.schema.json",
+      "sha256": "a0883c0405ff433db188849d458fb20b9c0d73e0ba1a6e44c1d83f3b485408dd",
+      "validates": "devcontainer.json"
+    }
+  },
+  "refresh": "python3 test/vendor-schemas.py [--check]"
+}

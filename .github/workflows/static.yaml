@@ -19,6 +19,37 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
 
+      - name: Install test tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends jq shellcheck
+          npm install -g "@sourcemeta/jsonschema@17.0.0"
+
+      - name: Devcontainer config matches the official spec
+        # 3e1dbe7 fixed hostRequirements.gpu = "all", which shipped in ad6da34
+        # and broke every build here. Nothing caught it: the permissive CLI
+        # reads a string, decides it is fine, and returns it -- upgrade exits
+        # 0. Only VS Code's stricter CLI rejected it, and only in the box.
+        # There is no `devcontainer validate` and 0.89.0, the newest on npm,
+        # has no validator at all, so the schema is checked here instead.
+        # Offline: the schema is vendored under test/schemas.
+        # --fast because the base schema root is a oneOf over container
+        # shapes: full output on a bad gpu also reports 12 phantom
+        # forwardPorts errors for integers the schema explicitly permits.
+        run: |
+          jsonschema validate --fast test/schemas/devContainer.base.schema.json \
+            .devcontainer/devcontainer.json
+
+      - name: Vendored schema is itself valid
+        # A corrupted or truncated vendored schema would make the check above
+        # pass while proving nothing.
+        run: jsonschema metaschema test/schemas/devContainer.base.schema.json
+
+      - name: Vendored schema matches upstream
+        # Guards the vendoring: without this the schema silently rots and the
+        # check above keeps passing against an out-of-date spec.
+        run: python3 test/vendor-schemas.py --check
+
       - name: Feature install order
         # The box was unbootable at one point: overrideFeatureInstallOrder used
         # bare names, which the CLI resolves as legacy features and rejects
@@ -30,12 +61,8 @@ jobs:
         # (arrays such as kv_args+=()), so they are linted as bash. Running
         # `dash -n` here reports a false syntax error on valid bash.
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends shellcheck
           shellcheck --severity=warning scripts/*.sh
           for f in scripts/*.sh; do bash -n "$f"; done
 
       - name: Config templates are valid JSON
-        run: |
-          sudo apt-get install -y --no-install-recommends jq
-          for f in .devcontainer/*.json; do jq empty "$f"; done
+        run: for f in .devcontainer/*.json; do jq empty "$f"; done

@@ -57,3 +57,8 @@ RUN cd / && /opt/llama-server/llama-server --version
 # part of the image.
 ENV MODELS_DIR=/workspaces/agentic-code-box/models
 RUN mkdir -p "$MODELS_DIR"
+
+# JSON Schema CLI, for test/. Pinned to the version CI installs so a local run
+# and a CI run cannot disagree on a gate.
+RUN npm install -g @sourcemeta/jsonschema@17.0.0 \
+    && jsonschema version
