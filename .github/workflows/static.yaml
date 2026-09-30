@@ -1,0 +1,41 @@
+name: static
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.devcontainer/**'
+      - 'scripts/**'
+      - 'test/**'
+      - '.github/workflows/static.yaml'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  checks:
+    name: Static checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Feature install order
+        # The box was unbootable at one point: overrideFeatureInstallOrder used
+        # bare names, which the CLI resolves as legacy features and rejects
+        # outright. This gate costs a second and needs no GPU.
+        run: python3 test/check-feature-order.py
+
+      - name: Shell syntax
+        # All of scripts/*.sh are #!/usr/bin/env bash and use bash-only syntax
+        # (arrays such as kv_args+=()), so they are linted as bash. Running
+        # `dash -n` here reports a false syntax error on valid bash.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends shellcheck
+          shellcheck --severity=warning scripts/*.sh
+          for f in scripts/*.sh; do bash -n "$f"; done
+
+      - name: Config templates are valid JSON
+        run: |
+          sudo apt-get install -y --no-install-recommends jq
+          for f in .devcontainer/*.json; do jq empty "$f"; done

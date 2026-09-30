@@ -99,6 +99,20 @@ Startup order is deliberate: the `models` feature must install **before**
 manifest at build time. That ordering is enforced via
 `overrideFeatureInstallOrder` in `.devcontainer/devcontainer.json`.
 
+Every entry in that list is a **full OCI ref**, matching a key in `features`
+exactly. This is not cosmetic. The CLI reads a bare name as a *legacy* feature
+from the default collection and refuses to build:
+
+```
+Legacy feature 'apt-get-packages' not supported.
+```
+
+The box does not boot, and the error names only the first bad entry, so it
+reads like a single typo rather than a list-wide mistake. `test/check-feature-order.py`
+enforces all three rules — full refs, every feature listed, and `models` before
+`bifrost-gateway` — and runs in CI, since catching this by hand means waiting on
+a GPU boot.
+
 On first create, `postCreateCommand` fetches the weights, generates
 `opencode.json`, and scaffolds the agent definitions. Weights land in `models/`
 (11 GB for `b`), which is gitignored.
@@ -159,6 +173,8 @@ scripts/
   auto-startup.sh          llama-server(s) + bifrost + opencode
   post-create.sh           first-run fetch, config generation, scaffold
   bench.sh                 VRAM + throughput measurement
+test/
+  check-feature-order.py    guards the install-order contract (see below)
 ```
 
 `AGENTS.md` / `AGENTS_LIFECYCLE.md` are intentionally **not** committed. The
