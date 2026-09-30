@@ -17,10 +17,10 @@
         "ghcr.io/nmwael/agentic-devcontainer-feature/bifrost-gateway": "1.1.1",
         "ghcr.io/nmwael/agentic-devcontainer-feature/opencode-agents": "1.2.2",
         "ghcr.io/devcontainers-extra/features/opencode": {
-            "version": "latest"
+            "version": "1.0.0"
         },
         "ghcr.io/tailscale/codespace/tailscale": {
-            "version": "latest"
+            "version": "1.0.8"
         },
         "ghcr.io/devcontainers-extra/features/apt-get-packages": {
             "version": "1",
@@ -38,11 +38,19 @@
         "ghcr.io/tailscale/codespace/tailscale",
         "ghcr.io/devcontainers-extra/features/apt-get-packages"
     ],
+    "privileged": false,
+    "capAdd": [
+        "SYS_PTRACE"
+    ],
+    "securityOpt": [
+        "seccomp:unconfined"
+    ],
+    "hostRequirements": {
+        "gpu": "all"
+    },
+    "remoteUser": "root",
     "runArgs": [
-        "--device=nvidia.com/gpu=all",
-        "--shm-size=2g",
-        "--cap-add=SYS_PTRACE",
-        "--security-opt=seccomp:unconfined"
+        "--shm-size=2g"
     ],
     "forwardPorts": [
         8082,
