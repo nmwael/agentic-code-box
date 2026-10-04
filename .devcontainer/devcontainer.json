@@ -1,7 +1,6 @@
 {
     "name": "agentic-code-box",
     "build": {
-        "context": "..",
         "dockerfile": "Dockerfile"
     },
     "features": {
@@ -14,7 +13,7 @@
         },
         "ghcr.io/nmwael/agentic-devcontainer-feature/llama-server:1.0.3": {},
         "ghcr.io/nmwael/agentic-devcontainer-feature/gpu-bridge:1.0.1": {},
-        "ghcr.io/nmwael/agentic-devcontainer-feature/models:1.3.0": {},
+        "ghcr.io/nmwael/agentic-devcontainer-feature/models:1.4.0": {},
         "ghcr.io/nmwael/agentic-devcontainer-feature/bifrost-gateway:1.1.1": {},
         "ghcr.io/nmwael/agentic-devcontainer-feature/opencode-agents:1.2.2": {},
         "ghcr.io/devcontainers-extra/features/opencode:1.0.0": {},
@@ -27,7 +26,7 @@
         "ghcr.io/devcontainers/features/common-utils:2",
         "ghcr.io/nmwael/agentic-devcontainer-feature/llama-server:1.0.3",
         "ghcr.io/nmwael/agentic-devcontainer-feature/gpu-bridge:1.0.1",
-        "ghcr.io/nmwael/agentic-devcontainer-feature/models:1.3.0",
+        "ghcr.io/nmwael/agentic-devcontainer-feature/models:1.4.0",
         "ghcr.io/nmwael/agentic-devcontainer-feature/bifrost-gateway:1.1.1",
         "ghcr.io/nmwael/agentic-devcontainer-feature/opencode-agents:1.2.2",
         "ghcr.io/devcontainers-extra/features/opencode:1.0.0",

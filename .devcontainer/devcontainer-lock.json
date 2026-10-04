@@ -1,11 +1,11 @@
 {
   "features": {
-    "ghcr.io/devcontainers-extra/features/apt-get-packages": {
+    "ghcr.io/devcontainers-extra/features/apt-get-packages:1.0.8": {
       "version": "1.0.8",
       "resolved": "ghcr.io/devcontainers-extra/features/apt-get-packages@sha256:776fa11c30c50fa91d5e1bf050444b0f130827457109c349db92e8e126b750ec",
       "integrity": "sha256:776fa11c30c50fa91d5e1bf050444b0f130827457109c349db92e8e126b750ec"
     },
-    "ghcr.io/devcontainers-extra/features/opencode": {
+    "ghcr.io/devcontainers-extra/features/opencode:1.0.0": {
       "version": "1.0.0",
       "resolved": "ghcr.io/devcontainers-extra/features/opencode@sha256:7c15617cc9e501bc218097adc4910a00f81ed52fc5a5eef463aa1cc01317f9ba",
       "integrity": "sha256:7c15617cc9e501bc218097adc4910a00f81ed52fc5a5eef463aa1cc01317f9ba"
@@ -15,32 +15,32 @@
       "resolved": "ghcr.io/devcontainers/features/common-utils@sha256:3f63bbee7418dc940d9e5e7ab93ef3049acfe4dba3085b17ee45fe307fdba4e5",
       "integrity": "sha256:3f63bbee7418dc940d9e5e7ab93ef3049acfe4dba3085b17ee45fe307fdba4e5"
     },
-    "ghcr.io/nmwael/agentic-devcontainer-feature/bifrost-gateway": {
+    "ghcr.io/nmwael/agentic-devcontainer-feature/bifrost-gateway:1.1.1": {
       "version": "1.1.1",
       "resolved": "ghcr.io/nmwael/agentic-devcontainer-feature/bifrost-gateway@sha256:b63bb31c0907f62b9266ba0b0fe3bedde5d2921d6f645fd28103faca3a2296d9",
       "integrity": "sha256:b63bb31c0907f62b9266ba0b0fe3bedde5d2921d6f645fd28103faca3a2296d9"
     },
-    "ghcr.io/nmwael/agentic-devcontainer-feature/gpu-bridge": {
+    "ghcr.io/nmwael/agentic-devcontainer-feature/gpu-bridge:1.0.1": {
       "version": "1.0.1",
       "resolved": "ghcr.io/nmwael/agentic-devcontainer-feature/gpu-bridge@sha256:5df32fb06a0eb02268acf37bd3335d5d69c47f8c6c351c25193937b1ee27e2d7",
       "integrity": "sha256:5df32fb06a0eb02268acf37bd3335d5d69c47f8c6c351c25193937b1ee27e2d7"
     },
-    "ghcr.io/nmwael/agentic-devcontainer-feature/llama-server": {
+    "ghcr.io/nmwael/agentic-devcontainer-feature/llama-server:1.0.3": {
       "version": "1.0.3",
       "resolved": "ghcr.io/nmwael/agentic-devcontainer-feature/llama-server@sha256:122965c16b8146efcb402a82829fbe39170657161b592e1e25018ceacec0efb0",
       "integrity": "sha256:122965c16b8146efcb402a82829fbe39170657161b592e1e25018ceacec0efb0"
     },
-    "ghcr.io/nmwael/agentic-devcontainer-feature/models": {
-      "version": "1.3.0",
-      "resolved": "ghcr.io/nmwael/agentic-devcontainer-feature/models@sha256:e6333caabc753b33d7d2a264be6a29b856b7622b4a8c4e316c7ec67821e33cfa",
-      "integrity": "sha256:e6333caabc753b33d7d2a264be6a29b856b7622b4a8c4e316c7ec67821e33cfa"
+    "ghcr.io/nmwael/agentic-devcontainer-feature/models:1.4.0": {
+      "version": "1.4.0",
+      "resolved": "ghcr.io/nmwael/agentic-devcontainer-feature/models@sha256:a1fdfad53a5a3f9ab0b66cd51f7de6459abbe148918c8b8a0b68545005d0221e",
+      "integrity": "sha256:a1fdfad53a5a3f9ab0b66cd51f7de6459abbe148918c8b8a0b68545005d0221e"
     },
-    "ghcr.io/nmwael/agentic-devcontainer-feature/opencode-agents": {
+    "ghcr.io/nmwael/agentic-devcontainer-feature/opencode-agents:1.2.2": {
       "version": "1.2.2",
       "resolved": "ghcr.io/nmwael/agentic-devcontainer-feature/opencode-agents@sha256:e1088a68381ebac1b0d3e92060051d948da54297f5f567b937c063df812d7f1a",
       "integrity": "sha256:e1088a68381ebac1b0d3e92060051d948da54297f5f567b937c063df812d7f1a"
     },
-    "ghcr.io/tailscale/codespace/tailscale": {
+    "ghcr.io/tailscale/codespace/tailscale:1.0.8": {
       "version": "1.0.8",
       "resolved": "ghcr.io/tailscale/codespace/tailscale@sha256:fa5ce7ca298e7ab95842fef99e107a01b090b8ca8a687789220f3f3c887ccdb2",
       "integrity": "sha256:fa5ce7ca298e7ab95842fef99e107a01b090b8ca8a687789220f3f3c887ccdb2"
