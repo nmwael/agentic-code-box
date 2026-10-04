@@ -1,6 +1,7 @@
 {
     "name": "agentic-code-box",
     "build": {
+        "context": "..",
         "dockerfile": "Dockerfile"
     },
     "features": {
