@@ -19,9 +19,7 @@
         "ghcr.io/devcontainers-extra/features/opencode": {
             "version": "1.0.0"
         },
-        "ghcr.io/tailscale/codespace/tailscale": {
-            "version": "1.0.8"
-        },
+        "ghcr.io/tailscale/codespace/tailscale": "1.0.8",
         "ghcr.io/devcontainers-extra/features/apt-get-packages": {
             "version": "1",
             "packages": "gh,jq,ripgrep,shfmt,bats,python3,python3-pip,python3-venv"
