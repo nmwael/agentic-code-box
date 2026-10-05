@@ -15,10 +15,10 @@
       "resolved": "ghcr.io/devcontainers/features/common-utils@sha256:3f63bbee7418dc940d9e5e7ab93ef3049acfe4dba3085b17ee45fe307fdba4e5",
       "integrity": "sha256:3f63bbee7418dc940d9e5e7ab93ef3049acfe4dba3085b17ee45fe307fdba4e5"
     },
-    "ghcr.io/nmwael/agentic-devcontainer-feature/bifrost-gateway:1.1.1": {
-      "version": "1.1.1",
-      "resolved": "ghcr.io/nmwael/agentic-devcontainer-feature/bifrost-gateway@sha256:b63bb31c0907f62b9266ba0b0fe3bedde5d2921d6f645fd28103faca3a2296d9",
-      "integrity": "sha256:b63bb31c0907f62b9266ba0b0fe3bedde5d2921d6f645fd28103faca3a2296d9"
+    "ghcr.io/nmwael/agentic-devcontainer-feature/bifrost-gateway:1.1.2": {
+      "version": "1.1.2",
+      "resolved": "ghcr.io/nmwael/agentic-devcontainer-feature/bifrost-gateway@sha256:4a016534bb3876e8ed49722b93d3eb9c9ec5786a2d71bd250fa2761ca95cbb0e",
+      "integrity": "sha256:4a016534bb3876e8ed49722b93d3eb9c9ec5786a2d71bd250fa2761ca95cbb0e"
     },
     "ghcr.io/nmwael/agentic-devcontainer-feature/gpu-bridge:1.0.1": {
       "version": "1.0.1",
