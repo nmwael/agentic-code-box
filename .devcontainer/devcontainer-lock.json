@@ -25,10 +25,10 @@
       "resolved": "ghcr.io/nmwael/agentic-devcontainer-feature/gpu-bridge@sha256:5df32fb06a0eb02268acf37bd3335d5d69c47f8c6c351c25193937b1ee27e2d7",
       "integrity": "sha256:5df32fb06a0eb02268acf37bd3335d5d69c47f8c6c351c25193937b1ee27e2d7"
     },
-    "ghcr.io/nmwael/agentic-devcontainer-feature/llama-server:1.0.3": {
-      "version": "1.0.3",
-      "resolved": "ghcr.io/nmwael/agentic-devcontainer-feature/llama-server@sha256:122965c16b8146efcb402a82829fbe39170657161b592e1e25018ceacec0efb0",
-      "integrity": "sha256:122965c16b8146efcb402a82829fbe39170657161b592e1e25018ceacec0efb0"
+    "ghcr.io/nmwael/agentic-devcontainer-feature/llama-server:1.0.5": {
+      "version": "1.0.5",
+      "resolved": "ghcr.io/nmwael/agentic-devcontainer-feature/llama-server@sha256:70013a24d8b77a0ba01fa1d00207dce466b7a445afbef59cb247703acd91efa5",
+      "integrity": "sha256:70013a24d8b77a0ba01fa1d00207dce466b7a445afbef59cb247703acd91efa5"
     },
     "ghcr.io/nmwael/agentic-devcontainer-feature/models:1.4.0": {
       "version": "1.4.0",

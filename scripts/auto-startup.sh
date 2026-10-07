@@ -128,4 +128,29 @@ else
     echo "[auto-startup] opencode CLI not installed — skipping"
 fi
 
+# --- llama watchdog (/health stays green while generation collapses) ----------
+# A server decoding at ~0.1 tok/s still answers /health in milliseconds, so
+# every agent turn would burn opencode's provider timeout instead of failing
+# fast. Two over-budget probes while idle recycle the server through this same
+# idempotent starter (WATCHDOG_RESTART points back at it); see
+# scripts/llama-watchdog.sh for the probe/confirm/ledger rules. The
+# pgrep pattern is anchored to the bare (argless) invocation so a
+# concurrent --probe/--once run is not mistaken for the daemon.
+SCRIPT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" 2>/dev/null && pwd) || SCRIPT_DIR="$PWD"
+SCRIPT_PATH="$SCRIPT_DIR/auto-startup.sh"
+WATCHDOG_BIN=""
+if command -v llama-watchdog >/dev/null 2>&1; then
+    WATCHDOG_BIN="$(command -v llama-watchdog)"
+elif [ -f "$SCRIPT_DIR/llama-watchdog.sh" ]; then
+    WATCHDOG_BIN="$SCRIPT_DIR/llama-watchdog.sh"
+fi
+if [ -z "$WATCHDOG_BIN" ]; then
+    echo "[auto-startup] llama-watchdog not installed — skipping (needs llama-server >= 1.0.5)"
+elif command -v pgrep >/dev/null 2>&1 && pgrep -f 'llama-watchdog(\.sh)?$' >/dev/null 2>&1; then
+    echo "[auto-startup] llama watchdog already running"
+else
+    echo "[auto-startup] starting llama watchdog (interval=${WATCHDOG_INTERVAL:-120}s budget=${WATCHDOG_BUDGET:-30}s)"
+    WATCHDOG_RESTART="bash $SCRIPT_PATH" nohup sh "$WATCHDOG_BIN" >>/tmp/llama-watchdog.log 2>&1 &
+fi
+
 echo "[auto-startup] done."
