@@ -9,7 +9,8 @@
     "context": 16384,
     "parallel": 3,
     "kv_cache_type_k": "q8_0",
-    "kv_cache_type_v": "q8_0"
+    "kv_cache_type_v": "q8_0",
+    "output": 4096
   },
   {
     "name": "qwen2.5-coder-3b",
@@ -21,6 +22,7 @@
     "context": 8192,
     "parallel": 1,
     "kv_cache_type_k": "q4_0",
-    "kv_cache_type_v": "q8_0"
+    "kv_cache_type_v": "q8_0",
+    "output": 2048
   }
 ]
