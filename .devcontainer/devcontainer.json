@@ -11,7 +11,7 @@
             "uid": "1000",
             "gid": "1000"
         },
-        "ghcr.io/nmwael/agentic-devcontainer-feature/llama-server:1.0.5": {},
+        "ghcr.io/nmwael/agentic-devcontainer-feature/llama-server:1.0.6": {},
         "ghcr.io/nmwael/agentic-devcontainer-feature/gpu-bridge:1.0.1": {},
         "ghcr.io/nmwael/agentic-devcontainer-feature/models:1.4.0": {},
         "ghcr.io/nmwael/agentic-devcontainer-feature/bifrost-gateway:1.1.3": {},
@@ -24,7 +24,7 @@
     },
     "overrideFeatureInstallOrder": [
         "ghcr.io/devcontainers/features/common-utils:2",
-        "ghcr.io/nmwael/agentic-devcontainer-feature/llama-server:1.0.5",
+        "ghcr.io/nmwael/agentic-devcontainer-feature/llama-server:1.0.6",
         "ghcr.io/nmwael/agentic-devcontainer-feature/gpu-bridge:1.0.1",
         "ghcr.io/nmwael/agentic-devcontainer-feature/models:1.4.0",
         "ghcr.io/nmwael/agentic-devcontainer-feature/bifrost-gateway:1.1.3",
